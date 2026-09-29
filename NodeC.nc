@@ -19,7 +19,7 @@ implementation {
     components new AMReceiverC(AM_PACK) as GeneralReceive;
 
     Node -> MainC.Boot;
-
+    
     Node.Receive -> GeneralReceive;
 
     components ActiveMessageC;
@@ -30,4 +30,10 @@ implementation {
 
     components CommandHandlerC;
     Node.CommandHandler -> CommandHandlerC;
+
+    components NDiscoveryC;
+    Node.NDiscovery -> NDiscoveryC;
+
+    components FloodingC;
+    Node.Flooding -> FloodingC;
 }

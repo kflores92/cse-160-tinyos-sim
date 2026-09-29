@@ -22,6 +22,10 @@ module Node{
    uses interface SimpleSend as Sender;
 
    uses interface CommandHandler;
+
+   uses interface NDiscovery;
+
+   uses interface Flooding;
 }
 
 implementation{
@@ -32,13 +36,16 @@ implementation{
 
    event void Boot.booted(){
       call AMControl.start();
-
       dbg(GENERAL_CHANNEL, "Booted\n");
    }
 
    event void AMControl.startDone(error_t err){
       if(err == SUCCESS){
          dbg(GENERAL_CHANNEL, "Radio On\n");
+         call Flooding.init();
+         dbg(FLOODING_CHANNEL, "Flooding Table Initialized");
+         call NDiscovery.start();
+         dbg(NEIGHBOR_CHANNEL, "Neighbor Discovery Started\n");
       }else{
          //Retry until successful
          call AMControl.start();
@@ -60,9 +67,9 @@ implementation{
 
 
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
-      dbg(GENERAL_CHANNEL, "PING EVENT \n");
+      dbg(FLOODING_CHANNEL, "Flooding Started \n");
       makePack(&sendPackage, TOS_NODE_ID, destination, 0, 0, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
-      call Sender.send(sendPackage, destination);
+      call Flooding.send(sendPackage, destination);
    }
 
    event void CommandHandler.printNeighbors(){}
