@@ -18,6 +18,6 @@ implementation {
     components new AMReceiverC(AM_PACK) as GeneralReceive;
     FloodingP.Receive -> GeneralReceive;
 
-    components new HashmapC(pack*, 64) as Cache;
+    components new HashmapC(pack, 64) as Cache;
     FloodingP.Cache -> Cache;
 }

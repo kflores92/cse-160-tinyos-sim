@@ -10,7 +10,7 @@
 #include "channels.h"
 
 enum{
-	PACKET_HEADER_LENGTH = 8,
+	PACKET_HEADER_LENGTH = 10,
 	PACKET_MAX_PAYLOAD_SIZE = 28 - PACKET_HEADER_LENGTH,
 	MAX_TTL = 15
 };
@@ -18,8 +18,6 @@ enum{
 
 typedef nx_struct pack{
 	nx_uint16_t origin;
-	nx_uint8_t fseq;
-	nx_uint8_t fTTL;
 	nx_uint16_t dest;
 	nx_uint16_t src;
 	nx_uint16_t seq;		//Sequence Number

@@ -21,9 +21,11 @@ def main():
     s.addChannel(s.FLOODING_CHANNEL);
 
     # After sending a ping, simulate a little to prevent collision.
-    s.runTime(1);
-    s.ping(1, 2, "Hello, World");
-    s.runTime(1);
+    s.runTime(20);
+    s.ping(1, 17, "Hello TTL.");
+    s.runTime(20);
+    s.ping(1, 10, "Hello Second World.");
+    s.runTime(20);
 
 if __name__ == '__main__':
     main()
