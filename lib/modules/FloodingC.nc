@@ -1,3 +1,5 @@
+#include "../../includes/packet.h"
+
 configuration FloodingC {
     provides interface Flooding;
 }
@@ -16,6 +18,6 @@ implementation {
     components new AMReceiverC(AM_PACK) as GeneralReceive;
     FloodingP.Receive -> GeneralReceive;
 
-    components new HashmapC(uint8_t, 64) as Table;
-    FloodingP.Table -> Table;
+    components new HashmapC(pack*, 64) as Cache;
+    FloodingP.Cache -> Cache;
 }

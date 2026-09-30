@@ -17,6 +17,9 @@ enum{
 
 
 typedef nx_struct pack{
+	nx_uint16_t origin;
+	nx_uint8_t fseq;
+	nx_uint8_t fTTL;
 	nx_uint16_t dest;
 	nx_uint16_t src;
 	nx_uint16_t seq;		//Sequence Number

@@ -32,7 +32,7 @@ implementation{
    pack sendPackage;
 
    // Prototypes
-   void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t Protocol, uint16_t seq, uint8_t *payload, uint8_t length);
+   void makePack(pack *Package, uint16_t origin, uint8_t fseq, uint8_t fTTL, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t Protocol, uint16_t seq, uint8_t *payload, uint8_t length);
 
    event void Boot.booted(){
       call AMControl.start();
@@ -56,11 +56,19 @@ implementation{
 
    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){
       dbg(GENERAL_CHANNEL, "Packet Received\n");
-      if(len==sizeof(pack)){
-         pack* myMsg=(pack*) payload;
-         dbg(GENERAL_CHANNEL, "Package Payload: %s\n", myMsg->payload);
-         return msg;
-      }
+
+         if(len==sizeof(pack)){
+            pack* myMsg = (pack*) payload;
+
+            if(myMsg->dest == TOS_NODE_ID) {
+               dbg(GENERAL_CHANNEL, "Package Payload: %s\n", myMsg->payload);
+               return msg;
+            }
+
+            dbg(GENERAL_CHANNEL, "Packet Forwarded.\n");
+            return msg;
+         }
+
       dbg(GENERAL_CHANNEL, "Unknown Packet Type %d\n", len);
       return msg;
    }
@@ -68,7 +76,7 @@ implementation{
 
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
       dbg(FLOODING_CHANNEL, "Flooding Started \n");
-      makePack(&sendPackage, TOS_NODE_ID, destination, 0, 0, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
+      makePack(&sendPackage, TOS_NODE_ID, 0, MAX_TTL, TOS_NODE_ID, destination, MAX_TTL, 0, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
       call Flooding.send(sendPackage, destination);
    }
 
@@ -88,7 +96,10 @@ implementation{
 
    event void CommandHandler.setAppClient(){}
 
-   void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
+   void makePack(pack *Package, uint16_t origin, uint8_t fseq, uint8_t fTTL, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
+      Package->origin = origin;
+      Package->fseq = fseq;
+      Package->fTTL = fTTL;
       Package->src = src;
       Package->dest = dest;
       Package->TTL = TTL;
