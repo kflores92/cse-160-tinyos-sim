@@ -55,11 +55,15 @@ implementation {
                     if(cachePacket.seq < myMsg->seq){
                         call Cache.remove(myMsg->origin);
                         call Cache.insert(myMsg->origin, storePacket);
+                    }else{
+                        dbg(FLOODING_CHANNEL, "Packet Dropped. \n");
+                        return msg;     
                     }
                 }else {
                     call Cache.insert(myMsg->origin, storePacket);
                 }
-
+                
+                dbg(GENERAL_CHANNEL, "Packet Payload: %s \n", myMsg->payload);
                 dbg(FLOODING_CHANNEL, "Packet Reached Destination and Cached. \n");     
                 return msg;
             }

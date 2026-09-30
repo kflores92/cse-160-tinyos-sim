@@ -59,7 +59,6 @@ implementation{
             pack* myMsg = (pack*) payload;
 
             if(myMsg->dest == TOS_NODE_ID) {
-               dbg(GENERAL_CHANNEL, "Package Payload: %s\n", myMsg->payload);
                return msg;
             }
 
@@ -78,7 +77,9 @@ implementation{
       call Flooding.send(sendPackage, destination);
    }
 
-   event void CommandHandler.printNeighbors(){}
+   event void CommandHandler.printNeighbors(){
+      call NDiscovery.printNeighbors();
+   }
 
    event void CommandHandler.printRouteTable(){}
 

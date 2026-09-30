@@ -7,6 +7,8 @@ module NDiscoveryP {
     uses interface Timer<TMilli> as neighborTimer;
     uses interface Random;
     uses interface SimpleSend as Sender;
+    uses interface Receive;
+    uses interface Hashmap<uint8_t> as Cache;
 }
 
 implementation {
@@ -17,18 +19,15 @@ implementation {
     }
 
     event void neighborTimer.fired() {
-        dbg(NEIGHBOR_CHANNEL, "Neighbor timer is fired");
+        dbg(NEIGHBOR_CHANNEL, "Neighbor timer is fired. \n");
     }
 
     command void NDiscovery.printNeighbors() {
 
     }
 
-    /*
-        1. Find out our own node's address.
-        2. Use SimpleSend with dest AM_BROADCAST_ADDR, we need a packet.
-        3. Send a package to all neighbors every time the timer fires.
-        4. Have a reciever
-    */
+    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t length){
+
+    }
 
 }
