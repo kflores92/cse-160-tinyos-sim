@@ -13,7 +13,7 @@ module FloodingP {
 implementation {
 
     void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
-    uint8_t mySeq = 0;
+    uint16_t mySeq = 0;
 
     command void Flooding.send(pack msg, uint16_t dest){
         pack cachePacket;
@@ -38,7 +38,6 @@ implementation {
     }
 
     event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){   
-
         dbg(FLOODING_CHANNEL, "Flood Recieve. \n");
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
@@ -46,6 +45,10 @@ implementation {
             pack storePacket;
             pack sendPacket;
             uint8_t* ptr_payload = myMsg->payload;
+
+            if(myMsg->protocol != 0){
+                return msg;
+            }
 
             makePack(&storePacket, myMsg->origin, myMsg->src, myMsg->dest, myMsg->TTL, myMsg->protocol, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
 

@@ -22,9 +22,17 @@ def main():
     s.addChannel(s.NEIGHBOR_CHANNEL);
 
     # After sending a ping, simulate a little to prevent collision.
-    s.runTime(20);
-    s.ping(1, 10, "Hello 10 from 1. :)");
-    s.runTime(20);
+    s.runTime(30);
+    s.neighborDMP(1);
+    s.runTime(3);
+    s.neighborDMP(2);
+    s.runTime(3);
+    s.neighborDMP(3);
+    s.runTime(3);
+    s.neighborDMP(4);
+    s.runTime(3);
+    s.neighborDMP(10);
+    s.runTime(3);
 
 if __name__ == '__main__':
     main()
