@@ -42,7 +42,7 @@ implementation {
             neighborInfo = call Cache.get(table[i]);
             neighborInfo.age -= 1;
 
-            if(neighborInfo.age >= 0){
+            if(neighborInfo.age > 0 && neighborInfo.age <= 5){
                 call Cache.insert(table[i], neighborInfo);
             }else{
                 call Cache.remove(table[i]);
@@ -80,7 +80,7 @@ implementation {
             if(myMsg->protocol == PROTOCOL_NPKT_R){
                 stats neighborInfo;
                 neighborInfo.cost = 1;
-                neighborInfo.age = 5;
+                neighborInfo.age = 3;
 
                 if(!(call Cache.contains(myMsg->origin))){
                     call Cache.insert(myMsg->origin, neighborInfo);
@@ -95,7 +95,7 @@ implementation {
             }
         }
 
-        dbg(NEIGHBOR_CHANNEL, "Packed Ignored by Neighbor Discovery. \n");
+        //dbg(NEIGHBOR_CHANNEL, "Packed Ignored by Neighbor Discovery. \n");
         return msg;
     }
 

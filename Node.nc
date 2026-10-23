@@ -53,8 +53,6 @@ implementation{
    event void AMControl.stopDone(error_t err){}
 
    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){
-      dbg(GENERAL_CHANNEL, "Packet Received\n");
-
          if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
 
@@ -62,11 +60,9 @@ implementation{
                return msg;
             }
 
-            dbg(GENERAL_CHANNEL, "Not Destination Packet. \n");
             return msg;
          }
-
-      dbg(GENERAL_CHANNEL, "Unknown Packet Type %d\n", len);
+         
       return msg;
    }
 

@@ -19,7 +19,7 @@ implementation {
         pack cachePacket;
         pack storePacket;
         msg.seq = mySeq;
-        mySeq++;
+        mySeq += 1;
 
         if(call Cache.contains(msg.origin)){
             cachePacket = call Cache.get(msg.origin);
@@ -38,7 +38,7 @@ implementation {
     }
 
     event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){   
-        dbg(FLOODING_CHANNEL, "Flood Recieve. \n");
+        //dbg(FLOODING_CHANNEL, "Flood Recieve. \n");
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
             pack cachePacket;
@@ -46,7 +46,7 @@ implementation {
             pack sendPacket;
             uint8_t* ptr_payload = myMsg->payload;
 
-            if(myMsg->protocol != 0){
+            if(myMsg->protocol != 0 && myMsg->protocol != 1){
                 return msg;
             }
 
@@ -64,6 +64,13 @@ implementation {
                     }
                 }else {
                     call Cache.insert(myMsg->origin, storePacket);
+                }
+
+                if(myMsg->protocol == 0){
+                    ptr_payload = "Message Recieved.";
+                    makePack(&sendPacket, TOS_NODE_ID, TOS_NODE_ID, myMsg->origin, MAX_TTL, 1, mySeq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
+                    mySeq += 1;
+                    call Flooding.send(sendPacket, myMsg->origin);
                 }
                 
                 dbg(GENERAL_CHANNEL, "Packet Payload: %s \n", myMsg->payload);
