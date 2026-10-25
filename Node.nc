@@ -26,6 +26,8 @@ module Node{
    uses interface NDiscovery;
 
    uses interface Flooding;
+   
+   uses interface DVRouting;
 }
 
 implementation{

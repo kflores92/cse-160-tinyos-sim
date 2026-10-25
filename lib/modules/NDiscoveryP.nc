@@ -51,6 +51,14 @@ implementation {
         }
     }
 
+    command uint32_t* NDiscovery.getNeighbors() {
+        return call Cache.getKeys();
+    }
+
+    command uint16_t NDiscovery.getTableSize() {
+        return call Cache.size();
+    }
+
     command void NDiscovery.printNeighbors() {
         table = call Cache.getKeys();
         dbg(NEIGHBOR_CHANNEL, "\n\n\n\n");
@@ -64,6 +72,7 @@ implementation {
         dbg(NEIGHBOR_CHANNEL, "---------------------\n");
         dbg(NEIGHBOR_CHANNEL, "\n\n\n\n");
     }
+
 
     event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){
         if(len == sizeof(pack)){
