@@ -6,7 +6,6 @@ module FloodingP {
 
     uses interface Random;
     uses interface SimpleSend as Sender;
-    uses interface Receive;
     uses interface Hashmap<pack> as Cache;
 }
 
@@ -37,7 +36,7 @@ implementation {
         dbg(FLOODING_CHANNEL, "Flood Packet Sent. \n");
     }
 
-    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){   
+    command message_t* updateFlood(message_t* msg, void* payload, uint8_t len){   
         //dbg(FLOODING_CHANNEL, "Flood Recieve. \n");
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
@@ -45,10 +44,6 @@ implementation {
             pack storePacket;
             pack sendPacket;
             uint8_t* ptr_payload = myMsg->payload;
-
-            if(myMsg->protocol != 0 && myMsg->protocol != 1){
-                return msg;
-            }
 
             makePack(&storePacket, myMsg->origin, myMsg->src, myMsg->dest, myMsg->TTL, myMsg->protocol, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
 

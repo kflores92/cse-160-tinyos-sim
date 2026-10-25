@@ -8,7 +8,6 @@ module NDiscoveryP {
     uses interface Timer<TMilli> as neighborTimer;
     uses interface Random;
     uses interface SimpleSend as Sender;
-    uses interface Receive;
     uses interface Hashmap<stats> as Cache;
 }
 
@@ -74,7 +73,7 @@ implementation {
     }
 
 
-    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){
+    command message_t* updateNeighbors(message_t* msg, void* payload, uint8_t len){
         if(len == sizeof(pack)){
             pack* myMsg = (pack*) payload;
             pack replyPack;

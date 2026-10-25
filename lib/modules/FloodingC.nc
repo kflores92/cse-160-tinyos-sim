@@ -15,9 +15,6 @@ implementation {
     components new SimpleSendC(AM_PACK) as Sender;
     FloodingP.Sender -> Sender;
 
-    components new AMReceiverC(AM_PACK) as GeneralReceive;
-    FloodingP.Receive -> GeneralReceive;
-
     components new HashmapC(pack, 64) as Cache;
     FloodingP.Cache -> Cache;
 }

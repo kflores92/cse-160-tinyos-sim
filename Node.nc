@@ -52,14 +52,24 @@ implementation{
       }
    }
 
-   event void AMControl.stopDone(error_t err){}
+   event void AMControl.stopDone(error_t err){
+
+   }
 
    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){
          if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
 
-            if(myMsg->dest == TOS_NODE_ID) {
-               return msg;
+            if(myMsg.protocol == PROTOCOL_PING || myMsg.protocol == PROTOCOL_PINGREPLY){
+               return call Flooding.updateFlood(msg, payload, len);
+            }
+
+            if(myMsg.protocol == PROTOCOL_NPKT || myMsg.protocol == PROTOCOL_NPKT_R){
+               return call NDiscovery.updateNeighbors(msg, payload, len);
+            }
+
+            if(myMsg.protocol == PROTOCOL_DV){
+               return call DVRouting.updateRouting(msg, payload, len);
             }
 
             return msg;
