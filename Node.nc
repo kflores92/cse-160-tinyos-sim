@@ -72,6 +72,10 @@ implementation{
                return call DVRouting.updateRouting(msg, payload, len);
             }
 
+            if(myMsg.protocol == PROTOCOL_IP){
+               return call Network.forwardIP(msg, payload, len);
+            }
+
             return msg;
          }
          
