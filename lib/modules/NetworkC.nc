@@ -12,14 +12,14 @@ implementation {
 
     //wire to DV
     components DVRoutingC as DVRouting;
-    NetworkP.DVRouting->DVRoutingC;
+    NetworkP.DVRouting -> DVRouting;
 
     //wire to link layer
     components new SimpleSendC(AM_PACK) as Sender;
-    NetworkP.Send->Sender;
+    NetworkP.Sender -> Sender;
 
     //wire packet interface
     components ActiveMessageC as Packet;
-    NetworkP.Packet->ActiveMessageC;
+    NetworkP.Packet -> Packet;
 
 }

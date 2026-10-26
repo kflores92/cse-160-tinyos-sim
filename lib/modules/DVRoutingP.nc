@@ -59,33 +59,30 @@ implementation {
     event void routingTimer.fired(){
 
         pack adPacket;
-        tuple routeInfo;
+        tuple storedInfo;
+        tuple routeInfo[MAX_NODES];
         uint32_t* neighborTable = call NDiscovery.getNeighbors();
         uint16_t tableSize = call NDiscovery.getTableSize();
         uint32_t neighborNode;
         uint8_t* payload;
-        uint8_t length;
         uint32_t i;
         uint32_t j;
 
         for(i = 0; i < tableSize; i++){
             neighborNode = neighborTable[i];
-            makeTuple(&routeInfo, neighborNode, neighborNode, 1);
-            call routingTable.insert(neighborNode, routeInfo);
+            makeTuple(&storedInfo, neighborNode, neighborNode, 1);
+            call routingTable.insert(neighborNode, storedInfo);
         }
 
         for(i = 0; i < tableSize; i++){
             neighborNode = neighborTable[i];
             for(j = 0; j < call routingTable.size(); j++){
-                routeInfo = call routingTable.get(j + 1);
-                if(neighborNode != routeInfo->next_hop){
-                    
-                    //This is where I'm assigning the routing table information to the payload.
-
+                storedInfo = call routingTable.get(j + 1);
+                if(neighborNode != storedInfo.next_hop){
+                     
                 }
             }
 
-            payload = Packet.getPayload()
             makePack(&adPacket, TOS_NODE_ID, TOS_NODE_ID, neighborNode, 1, PROTOCOL_DV, routeSeq, payload, PACKET_MAX_PAYLOAD_SIZE);
             call Sender.send(adPacket, neighborNode);
         }
@@ -106,8 +103,8 @@ implementation {
                 if(i == (routeInfo->dest)){
                     currentInfo = call routingTable.get(i);
                     nextHop = call routingTable.get((uint32_t)routeInfo->next_hop);
-                    if((routeInfo->cost + nextHop->cost) < currentInfo->cost){
-                        makeTuple(&newInfo, routeInfo->dest, routeInfo->next_hop, (routeInfo->cost + nextHop->cost));
+                    if((routeInfo->cost + nextHop.cost) < currentInfo.cost){
+                        makeTuple(&newInfo, routeInfo->dest, routeInfo->next_hop, (routeInfo->cost + nextHop.cost));
                         call routingTable.insert((int)i, newInfo);
                     }
                 }
@@ -125,9 +122,9 @@ implementation {
 
         if(call routingTable.contains(dest)){
             routingInfo = call routingTable.get(dest);
-            return routingInfo->cost;
+            return routingInfo.cost;
         }else {
-            return routingInfo->cost;
+            return routingInfo.cost;
         }
     }
 

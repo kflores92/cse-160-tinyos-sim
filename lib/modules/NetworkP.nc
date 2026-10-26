@@ -5,7 +5,7 @@
 module NetworkP {
     provides interface Network;
 
-    uses interface Sender;
+    uses interface SimpleSend as Sender;
     uses interface Packet;
     uses interface DVRouting;
 }
