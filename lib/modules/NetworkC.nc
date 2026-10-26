@@ -11,7 +11,7 @@ implementation {
     Network = NetworkP;
 
     //wire to DV
-    components DVRoutingC;
+    components DVRoutingC as DVRouting;
     NetworkP.DVRouting->DVRoutingC;
 
     //wire to link layer

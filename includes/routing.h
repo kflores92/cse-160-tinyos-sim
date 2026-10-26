@@ -8,8 +8,8 @@ typedef nx_struct tuple{
 }tuple;
 
 enum {
-    INF = 33;
-    MAX_NODES = 32;
-}
+    INF = 33,
+    MAX_NODES = 32
+};
 
 #endif

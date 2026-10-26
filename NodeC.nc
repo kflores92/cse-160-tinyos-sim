@@ -39,4 +39,7 @@ implementation {
 
     components DVRoutingC;
     Node.DVRouting -> DVRoutingC;
+
+    components NetworkC;
+    Node.Network -> NetworkC;
 }

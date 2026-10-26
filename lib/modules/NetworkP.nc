@@ -5,8 +5,8 @@
 module NetworkP {
     provides interface Network;
 
-    uses interface Send;
-    uses interface Packet;
+    uses interface SimpleSend as Sender;
+    uses interface ActiveMessageC as Packet;
     uses interface DVRouting;
 }
 
@@ -15,11 +15,11 @@ implementation {
     uint16_t mySeq;
     uint16_t nextHop;
 
-    command error_t send(pack* msg, uint16_t dest){
+    command error_t Network.send(pack* msg, uint16_t dest){
 
     }
 
-    command message_t* forwardIP(message_t* msg, void* payload, uint8_t len){
+    command message_t* Network.forwardIP(message_t* msg, void* payload, uint8_t len){
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
 

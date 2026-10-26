@@ -36,7 +36,7 @@ implementation {
         dbg(FLOODING_CHANNEL, "Flood Packet Sent. \n");
     }
 
-    command message_t* updateFlood(message_t* msg, void* payload, uint8_t len){   
+    command message_t* Flooding.updateFlood(message_t* msg, void* payload, uint8_t len){   
         //dbg(FLOODING_CHANNEL, "Flood Recieve. \n");
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;

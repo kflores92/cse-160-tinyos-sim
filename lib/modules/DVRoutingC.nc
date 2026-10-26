@@ -8,20 +8,25 @@ configuration DVRoutingC {
 }
 
 implementation {
+
     components DVRoutingP;
     DVRouting = DVRoutingP;
 
     components new TimerMilliC() as startTimer;
-    components new TimerMilliC() as routingTimer;
-    components RandomC as Random;
-    components new HashmapC(stats, 64) as routingTable;
-    components new SimpleSendC(AM_PACK) as Sender;
-    components NDiscoveryC as NDiscovery;
+    DVRoutingP.startTimer -> startTimer;
 
-    DVRouting.startTimer -> startTimer;
-    DVRouting.routingTimer -> routingTimer;
-    DVRouting.Random -> Random;
-    DVRouting.routingTable -> routingTable;
-    DVRouting.Sender -> Sender;
+    components new TimerMilliC() as routingTimer;
+    DVRoutingP.routingTimer -> routingTimer;
+
+    components RandomC as Random;
+    DVRoutingP.Random -> Random;
+
+    components new HashmapC(tuple, 64) as routingTable;
+    DVRoutingP.routingTable -> routingTable;
+
+    components new SimpleSendC(AM_PACK) as Sender;
+    DVRoutingP.Sender -> Sender;
+
+    components NDiscoveryC as NDiscovery;
     DVRoutingP.NDiscovery -> NDiscovery;
 }

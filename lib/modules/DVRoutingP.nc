@@ -16,19 +16,17 @@ module DVRoutingP {
 
 implementation {
 
+    uint16_t routeSeq = 0;
     void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
     void makeTuple(tuple *Tuple, uint16_t dest, uint16_t next_hop, uint16_t cost);
-    uint16_t routeSeq = 0;
 
-    command void start(){
-        call startTimer.startOneShot(4000 + (uint16_t) (call Random.rand16()%500));
-        post initalizeRoutingTable();
-    }
-
-    task void initalizeRoutingTable(){
+    command void DVRouting.start(){
+        
         tuple* routeInfo;
+        int i;
+        call startTimer.startOneShot(4000 + (uint16_t) (call Random.rand16()%500));
 
-        for(int i = 1; i <= MAX_NODES; i++){
+        for(i = 1; i <= MAX_NODES; i++){
             if(i == TOS_NODE_ID){
                 makeTuple(routeInfo, TOS_NODE_ID, TOS_NODE_ID, 0)
                 routingTable.insert(i, routeInfo);
@@ -42,10 +40,11 @@ implementation {
 
     command void startTimer.fired(){
         tuple* routeInfo;
+        int i;
         uint32_t* neighborTable = NDiscovery.getNeighbors();
         uint16_t tableSize = NDiscovery.getTableSize();
 
-        for(int i = 0; i < tableSize; i++){
+        for(i = 0; i < tableSize; i++){
             neighborNode = neighborTable[i];
             makeTuple(routeInfo, neighborNode, neighborNode, 1);
             routingTable.insert(neighborNode, routeInfo);
@@ -62,16 +61,18 @@ implementation {
         uint16_t tableSize = NDiscovery.getTableSize();
         uint32_t neighborNode;
         uint8_t* payload;
+        int i;
+        int j;
 
-        for(int i = 0; i < tableSize; i++){
+        for(i = 0; i < tableSize; i++){
             neighborNode = neighborTable[i];
             makeTuple(routeInfo, neighborNode, neighborNode, 1);
             routingTable.insert(neighborNode, routeInfo);
         }
 
-        for(int i = 0; i < tableSize; i++){
+        for(i = 0; i < tableSize; i++){
             neighborNode = neighborTable[i];
-            for(int j = 0; j < routingTable.size(); j++){
+            for(j = 0; j < routingTable.size(); j++){
                 routeInfo = routingTable.get(j + 1);
                 if(neighborNode != routeInfo.next_hop){
                     payload = routeInfo;
@@ -84,15 +85,16 @@ implementation {
         routeSeq = routeSeq + 1;
     }
 
-    command message_t* updateRouting(message_t* msg, void* payload, uint8_t len){
+    command message_t* DVRouting.updateRouting(message_t* msg, void* payload, uint8_t len){
         if(len == sizeof(pack)){
             pack* recieveAd = (pack*)payload;
             tuple* routeInfo = (tuple*)recieveAd.payload;
             tuple* currentInfo;
             tuple* nextHop;
             tuple* newInfo;
+            int i;
 
-            for(int i = 1; i <= routingTable.size(); i++){
+            for(i = 1; i <= routingTable.size(); i++){
                 if(i = routeInfo.dest){
                     currentInfo = routingTable.get(i);
                     nextHop = routingTable.get(routeInfo.next_hop);
@@ -109,7 +111,7 @@ implementation {
         }
     }
 
-    command uint16_t getRouting(uint16_t dest) {
+    command uint16_t DVRouting.getRouting(uint16_t dest) {
         //Return next_hop from Routing Table for a particular dest.
         tuple* routingInfo;
         makeTuple(routingInfo, dest, TOS_NODE_ID, INF);

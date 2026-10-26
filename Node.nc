@@ -12,6 +12,7 @@
 #include "includes/CommandMsg.h"
 #include "includes/sendInfo.h"
 #include "includes/channels.h"
+#include "includes/protocol.h"
 
 module Node{
    uses interface Boot;
@@ -28,6 +29,8 @@ module Node{
    uses interface Flooding;
    
    uses interface DVRouting;
+
+   uses interface Network;
 }
 
 implementation{
@@ -60,19 +63,19 @@ implementation{
          if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
 
-            if(myMsg.protocol == PROTOCOL_PING || myMsg.protocol == PROTOCOL_PINGREPLY){
+            if(myMsg->protocol == PROTOCOL_PING || myMsg->protocol == PROTOCOL_PINGREPLY){
                return call Flooding.updateFlood(msg, payload, len);
             }
 
-            if(myMsg.protocol == PROTOCOL_NPKT || myMsg.protocol == PROTOCOL_NPKT_R){
+            if(myMsg->protocol == PROTOCOL_NPKT || myMsg->protocol == PROTOCOL_NPKT_R){
                return call NDiscovery.updateNeighbors(msg, payload, len);
             }
 
-            if(myMsg.protocol == PROTOCOL_DV){
+            if(myMsg->protocol == PROTOCOL_DV){
                return call DVRouting.updateRouting(msg, payload, len);
             }
 
-            if(myMsg.protocol == PROTOCOL_IP){
+            if(myMsg->protocol == PROTOCOL_IP){
                return call Network.forwardIP(msg, payload, len);
             }
 
