@@ -29,4 +29,7 @@ implementation {
 
     components NDiscoveryC as NDiscovery;
     DVRoutingP.NDiscovery -> NDiscovery;
+
+    components ActiveMessageC as Packet;
+    DVRoutingP.Packet -> Packet;
 }
