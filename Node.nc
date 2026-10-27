@@ -30,7 +30,6 @@ module Node{
    
    uses interface DVRouting;
 
-   uses interface Network;
 }
 
 implementation{
@@ -49,6 +48,8 @@ implementation{
          dbg(GENERAL_CHANNEL, "Radio On\n");
          call NDiscovery.start();
          dbg(NEIGHBOR_CHANNEL, "Neighbor Discovery Started\n");
+         call DVRouting.start();
+         dbg(ROUTING_CHANNEL, "Distance Vector Routing Started\n");
       }else{
          //Retry until successful
          call AMControl.start();
@@ -76,7 +77,7 @@ implementation{
             }
 
             if(myMsg->protocol == PROTOCOL_IP){
-               return call Network.forwardIP(msg, payload, len);
+               return msg;
             }
 
             return msg;
@@ -96,7 +97,9 @@ implementation{
       call NDiscovery.printNeighbors();
    }
 
-   event void CommandHandler.printRouteTable(){}
+   event void CommandHandler.printRouteTable(){
+      call DVRouting.printRoutingTable();
+   }
 
    event void CommandHandler.printLinkState(){}
 

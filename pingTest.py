@@ -17,19 +17,19 @@ def main():
     s.bootAll();
 
     # Add the main channels. These channels are declared in includes/channels.h
-    s.addChannel(s.GENERAL_CHANNEL);
-    s.addChannel(s.FLOODING_CHANNEL);
-    s.addChannel(s.NEIGHBOR_CHANNEL);
+    #s.addChannel(s.GENERAL_CHANNEL);
+    #s.addChannel(s.FLOODING_CHANNEL);
+    #s.addChannel(s.NEIGHBOR_CHANNEL);
+    #s.addChannel(s.HASHMAP_CHANNEL);
+    s.addChannel(s.ROUTING_CHANNEL);
 
     # After sending a ping, simulate a little to prevent collision.
     s.runTime(20);
-    s.ping(2, 19, "Hi");
-    s.runTime(10);
-    s.neighborDMP(5);
-    s.runTime(10);
-    s.moteOff(4);
-    s.runTime(10)
-    s.neighborDMP(3);
+    s.routeDMP(2);
+    s.runTime(20);
+    s.moteOff(3);
+    s.runTime(20);
+    s.routeDMP(2);
     s.runTime(10);
 
 if __name__ == '__main__':
