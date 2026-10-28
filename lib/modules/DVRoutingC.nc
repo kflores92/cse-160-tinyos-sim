@@ -21,8 +21,11 @@ implementation {
     components RandomC as Random;
     DVRoutingP.Random -> Random;
 
-    components new HashmapC(tuple, 64) as routingTable;
+    components new HashmapC(tuple, 255) as routingTable;
     DVRoutingP.routingTable -> routingTable;
+
+    components new HashmapC(valid, 255) as validTable;
+    DVRoutingP.validTable -> validTable;
 
     components new SimpleSendC(AM_PACK) as Sender;
     DVRoutingP.Sender -> Sender;

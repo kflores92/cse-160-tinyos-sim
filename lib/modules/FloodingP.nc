@@ -68,7 +68,6 @@ implementation {
                     call Flooding.send(sendPacket, myMsg->origin);
                 }
                 
-                dbg(GENERAL_CHANNEL, "Packet Payload: %s \n", myMsg->payload);
                 dbg(FLOODING_CHANNEL, "Packet Reached Destination and Cached. \n");     
                 return msg;
             }

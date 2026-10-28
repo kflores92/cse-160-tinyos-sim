@@ -8,7 +8,7 @@ def main():
     s.runTime(1);
 
     # Load the the layout of the network.
-    s.loadTopo("long_line.topo");
+    s.loadTopo("example.topo");
 
     # Add a noise model to all of the motes.
     s.loadNoise("no_noise.txt");
@@ -17,7 +17,7 @@ def main():
     s.bootAll();
 
     # Add the main channels. These channels are declared in includes/channels.h
-    #s.addChannel(s.GENERAL_CHANNEL);
+    s.addChannel(s.GENERAL_CHANNEL);
     #s.addChannel(s.FLOODING_CHANNEL);
     #s.addChannel(s.NEIGHBOR_CHANNEL);
     #s.addChannel(s.HASHMAP_CHANNEL);
@@ -27,8 +27,15 @@ def main():
     s.runTime(20);
     s.routeDMP(2);
     s.runTime(20);
-    s.ping(2, 8, "Hello 8, From 2");
+    s.routeDMP(2);
     s.runTime(20);
+    s.routeDMP(2);
+    s.runTime(20);
+    s.routeDMP(2);
+    s.runTime(20);
+    s.ping(2, 4, "Hello 4, From 2");
+    s.runTime(20);
+
 
 if __name__ == '__main__':
     main()
