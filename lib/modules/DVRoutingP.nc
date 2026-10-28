@@ -88,8 +88,10 @@ implementation {
 
         pack adPacket;
         tuple storedInfo;
+        tuple newInfo;
         tuple routeInfo[MAX_PAYLOAD_TUPLES];
         message_t* pkt;
+        bool invalidNextHop;
         uint16_t currentTableSize = call NDiscovery.getTableSize();
         uint32_t neighborNode;
         uint8_t* payload;
@@ -117,23 +119,44 @@ implementation {
                 makeTuple(&storedInfo, neighborNode, neighborNode, 1);
                 call routingTable.insert(neighborNode, storedInfo);
             }
+            
+            for(j = 1; j <= call routingTable.size(); j++) {
+                storedInfo = call routingTable.get(j);
+                invalidNextHop = TRUE;
+
+                for(i = 0; i < neighborTableSize; i++){
+                    neighborNode = neighborTable[i];
+                    if(storedInfo.next_hop == neighborNode){
+                        invalidNextHop = FALSE;
+                    }
+                }
+
+                if(invalidNextHop){
+                    makeTuple(&newInfo, storedInfo.dest, INF, INF);
+                    call routingTable.insert(j, newInfo);
+                }
+            }
         }
+
         
         //Send Routing Information to Neighbors
 
         for(i = 0; i < neighborTableSize; i++){
             neighborNode = neighborTable[i];
-            
+
             for(j = 0; j <= call routingTable.size()/MAX_PAYLOAD_TUPLES; j++){
                 for(p = 1; p <= MAX_PAYLOAD_TUPLES; p++){
                     routeInfo[p - 1] = call routingTable.get((j * MAX_PAYLOAD_TUPLES) + p);
+                    if(routeInfo[p - 1].next_hop == neighborNode){
+                        routeInfo[p - 1].cost = INF;
+                    } 
                 }
 
                 payload = (uint8_t*) routeInfo;
                 makePack(&adPacket, TOS_NODE_ID, TOS_NODE_ID, neighborNode, 1, PROTOCOL_DV, routeSeq, payload, PACKET_MAX_PAYLOAD_SIZE);
                 call Sender.send(adPacket, neighborNode);
             }
-        }
+    }
 
         routeSeq = routeSeq + 1;
 
