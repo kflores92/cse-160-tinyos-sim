@@ -39,7 +39,7 @@ implementation {
                 makeTuple(&routeInfo, TOS_NODE_ID, TOS_NODE_ID, 0);
                 call routingTable.insert(i, routeInfo);
             }else{
-                makeTuple(&routeInfo, i, INF, INF);
+                makeTuple(&routeInfo, i, INVALID_NH, INF);
                 call routingTable.insert(i, routeInfo);
             }
             
@@ -106,7 +106,7 @@ implementation {
 
             for(i = 0; i < neighborTableSize; i++){
                 neighborNode = neighborTableCopy[i];
-                makeTuple(&storedInfo, neighborNode, INF, INF);
+                makeTuple(&storedInfo, neighborNode, INVALID_NH, INF);
                 call routingTable.insert(neighborNode, storedInfo);
             }
 
@@ -132,7 +132,7 @@ implementation {
                 }
 
                 if(invalidNextHop){
-                    makeTuple(&newInfo, storedInfo.dest, INF, INF);
+                    makeTuple(&newInfo, storedInfo.dest, INVALID_NH, INF);
                     call routingTable.insert(j, newInfo);
                 }
             }
@@ -190,7 +190,7 @@ implementation {
     command uint8_t DVRouting.getRouting(uint8_t dest) {
 
         tuple routingInfo;
-        makeTuple(&routingInfo, dest, TOS_NODE_ID, INF);
+        makeTuple(&routingInfo, dest, INVALID_NH, INF);
 
         if(call routingTable.contains(dest)){
             routingInfo = call routingTable.get(dest);

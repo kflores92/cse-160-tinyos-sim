@@ -8,7 +8,8 @@ typedef nx_struct tuple{
 }tuple;
 
 enum {
-    INF = 33,
+    INF = 16,
+    INVALID_NH = 0,
     MAX_NODES = 32,
     MAX_PAYLOAD_TUPLES = 4
 };
