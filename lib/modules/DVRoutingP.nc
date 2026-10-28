@@ -52,7 +52,7 @@ implementation {
         for(i = 0; i < call routingTable.size(); i++){
             current = routes[i];
             storedRoute = call routingTable.get(current);
-            dbg(ROUTING_CHANNEL, "Dest: %d | Next Hop: %d | Cost: %d . \n", storedRoute.dest, storedRoute.next_hop, storedRoute.cost);
+            dbg(ROUTING_CHANNEL, "Key: %d | Dest: %d | Next Hop: %d | Cost: %d . \n", current, storedRoute.dest, storedRoute.next_hop, storedRoute.cost);
         }
         dbg(ROUTING_CHANNEL, "---------------------\n");
         dbg(ROUTING_CHANNEL, "\n\n\n\n");
