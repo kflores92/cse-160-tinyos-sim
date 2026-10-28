@@ -27,7 +27,7 @@ def main():
     s.runTime(20);
     s.routeDMP(2);
     s.runTime(20);
-    s.moteOff(3);
+    s.routeDMP(2);
     s.runTime(20);
     s.routeDMP(2);
     s.runTime(20);
