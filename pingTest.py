@@ -27,9 +27,7 @@ def main():
     s.runTime(20);
     s.routeDMP(2);
     s.runTime(20);
-    s.moteOff(3);
-    s.runTime(20);
-    s.routeDMP(2);
+    s.ping(2, 8, "Hello 8, From 2");
     s.runTime(20);
 
 if __name__ == '__main__':

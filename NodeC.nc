@@ -40,4 +40,6 @@ implementation {
     components DVRoutingC;
     Node.DVRouting -> DVRoutingC;
 
+    components TinynetC;
+    Node.Tinynet -> TinynetC;
 }

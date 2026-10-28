@@ -30,10 +30,11 @@ module Node{
    
    uses interface DVRouting;
 
+   uses interface Tinynet;
+
 }
 
 implementation{
-   pack sendPackage;
 
    // Prototypes
    void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
@@ -77,9 +78,8 @@ implementation{
             }
 
             if(myMsg->protocol == PROTOCOL_IP){
-               
-               
-               return msg;
+               dbg(ROUTING_CHANNEL, "Caught IP packet\n");
+               return call Tinynet.forwardIP(msg, payload, len);
             }
 
             return msg;
@@ -90,9 +90,11 @@ implementation{
 
 
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
-      dbg(FLOODING_CHANNEL, "Flooding Started \n");
-      makePack(&sendPackage, TOS_NODE_ID, TOS_NODE_ID, destination, MAX_TTL, 0, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
-      call Flooding.send(sendPackage, destination);
+      pack sendPackage;
+      dbg(ROUTING_CHANNEL, "Sending IP packet\n");
+      
+      makePack(&sendPackage, TOS_NODE_ID, TOS_NODE_ID, destination, MAX_TTL, PROTOCOL_IP, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
+      call Tinynet.send(&sendPackage, destination);
    }
 
    event void CommandHandler.printNeighbors(){
