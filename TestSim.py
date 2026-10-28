@@ -102,6 +102,12 @@ class TestSim:
         for i in range(ticks):
             self.t.runNextEvent()
 
+    def radioOff(self, nodeID1, nodeID2):
+        self.r.remove(nodeID1, nodeID2);
+
+    def radioOn(self, nodeID1, nodeID2, noise = -54.0):
+        self.r.add(nodeID1, nodeID2, noise);
+
     # Rough run time. tickPerSecond does not work.
     def runTime(self, amount):
         self.run(amount*1000)

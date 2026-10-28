@@ -17,7 +17,7 @@ implementation {
     uint16_t mySeq;
     uint8_t nextHop;
 
-    
+
         pack* outgoingPack;
 
     command error_t Tinynet.send(pack* msg, uint16_t dest){
@@ -44,7 +44,7 @@ implementation {
                 
 
                 if (call Sender.send(*outgoingPack, nextHop) == SUCCESS){
-                    dbg(ROUTING_CHANNEL, "Sending to next hop!%d\n", TOS_NODE_ID);
+                    dbg(ROUTING_CHANNEL, "Sending to next hop! from %d\n", TOS_NODE_ID);
                     return SUCCESS;
                 }
                 else{
@@ -90,8 +90,6 @@ implementation {
                     return msg;
                 }
                 
-                
-
                 nextHop = call DVRouting.getRouting(myMsg->dest);
 
                     if (nextHop != INF) {
@@ -123,7 +121,6 @@ implementation {
                     }
                     else{
                         dbg(ROUTING_CHANNEL, "Packet has been dropped. No route to dest \n");
-                        
                     }
                 
             }
