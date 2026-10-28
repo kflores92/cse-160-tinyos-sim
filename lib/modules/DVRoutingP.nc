@@ -89,6 +89,7 @@ implementation {
         pack adPacket;
         tuple storedInfo;
         tuple routeInfo[MAX_PAYLOAD_TUPLES];
+        message_t* pkt;
         uint16_t currentTableSize = call NDiscovery.getTableSize();
         uint32_t neighborNode;
         uint8_t* payload;
@@ -130,7 +131,7 @@ implementation {
 
                 payload = (uint8_t*) routeInfo;
                 makePack(&adPacket, TOS_NODE_ID, TOS_NODE_ID, neighborNode, 1, PROTOCOL_DV, routeSeq, payload, PACKET_MAX_PAYLOAD_SIZE);
-                //call Sender.send(adPacket, neighborNode);
+                call Sender.send(adPacket, neighborNode);
             }
         }
 
@@ -139,24 +140,21 @@ implementation {
     }
 
     command message_t* DVRouting.updateRouting(message_t* msg, void* payload, uint8_t len) {
-        
-        /*
+
         if(len == sizeof(pack)){
             pack* recieveAd = (pack*)payload;
-            tuple* routeInfo = (tuple*)recieveAd->payload;
-            tuple currentInfo;
-            tuple nextHop;
-            tuple newInfo;
-            uint32_t i;
+            tuple* routeInfo = (tuple*) recieveAd->payload;
+            tuple storedInfo;
+            uint8_t i;
+            uint8_t j;
 
-            for(i = 1; i <= call routingTable.size(); i++){
-                if(i == (routeInfo->dest)){
-                    currentInfo = call routingTable.get(i);
-                    nextHop = call routingTable.get((uint32_t)recieveAd->src);
-                    if((routeInfo->cost + nextHop.cost) < currentInfo.cost){
-                        makeTuple(&newInfo, routeInfo->dest, (routeInfo->cost + nextHop.cost));
-                        call routingTable.insert((int)i, newInfo);
-                    }
+
+            for(i = 0; i < MAX_PAYLOAD_TUPLES; i++){
+                storedInfo = call routingTable.get(routeInfo[i].dest);
+
+                if(routeInfo[i].cost + 1 < storedInfo.cost){
+                    makeTuple(&storedInfo, routeInfo[i].dest, recieveAd->src, routeInfo[i].cost + 1);
+                    call routingTable.insert(routeInfo[i].dest, storedInfo);
                 }
             }
 
@@ -164,7 +162,6 @@ implementation {
         }else {
             return msg;
         }
-        */
     }
 
     command uint8_t DVRouting.getRouting(uint8_t dest) {

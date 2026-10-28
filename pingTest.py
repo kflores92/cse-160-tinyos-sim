@@ -30,7 +30,7 @@ def main():
     s.moteOff(3);
     s.runTime(20);
     s.routeDMP(2);
-    s.runTime(10);
+    s.runTime(20);
 
 if __name__ == '__main__':
     main()
