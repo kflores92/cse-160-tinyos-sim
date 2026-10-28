@@ -19,13 +19,10 @@ def main():
     # Add the main channels. These channels are declared in includes/channels.h
     s.addChannel(s.GENERAL_CHANNEL);
     s.addChannel(s.ROUTING_CHANNEL);
+    s.addChannel(s.AD_CHANNEL);
 
     s.runTime(20);
-    s.routeDMP(1);
-    s.runTime(2);
-    s.routeDMP(4);
-    s.runTime(10);
-    s.ping(1, 4, "Hello 4 from 1.");
+    s.routeDMP(3);
     s.runTime(20);
 
 

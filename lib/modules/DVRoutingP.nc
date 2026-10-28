@@ -200,7 +200,11 @@ implementation {
                     routeInfo[p] = call routingTable.get(routes[(j * MAX_PAYLOAD_TUPLES) + p]);
                     if(routeInfo[p].next_hop == neighborNode) {
                         routeInfo[p].cost = INF;
-                    } 
+                    }
+
+                    if(TOS_NODE_ID == 3){
+                        dbg(AD_CHANNEL, "To: %d, Dest: %d, NH: %d, Cost %d. \n", neighborNode, routeInfo[p].dest, routeInfo[p].next_hop, routeInfo[p].cost);
+                    }
                 }
 
                 payload = (uint8_t*) routeInfo;
