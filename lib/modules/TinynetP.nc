@@ -61,22 +61,30 @@ implementation {
     
 
     command message_t* Tinynet.forwardIP(message_t* msg, void* payload, uint8_t len){
+        uint8_t* ptr_payload;
+        const char* ack = "ACK";
         dbg(ROUTING_CHANNEL, "FORWARD_IP CALLED on node %d\n", TOS_NODE_ID);
-
-
 
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
+            pack sendPack;
 
-            if(myMsg->dest == TOS_NODE_ID) {
-
+            if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IP) {
                 //if dest ping
                 dbg(ROUTING_CHANNEL, "Packet has reached destination! \n");
                 dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
-               return msg;
-            }
+                ptr_payload = ack;
+                makePack(&sendPack, TOS_NODE_ID, myMsg->src, MAX_TTL, PROTOCOL_IPR, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
+                call Tinynet.send(&sendPack, myMsg->src);
+                return msg;
 
-            else{
+            }else if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IPR){
+                //if dest ping reply
+                dbg(ROUTING_CHANNEL, "Reply has reached destination! \n");
+                dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
+                return msg;
+
+            }else{
                 if(myMsg->TTL <= 1){
                     dbg(ROUTING_CHANNEL, "Packet has expired or been dropped. \n");
                     return msg;

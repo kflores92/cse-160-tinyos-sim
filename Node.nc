@@ -65,7 +65,7 @@ implementation{
          if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
 
-            if(myMsg->protocol == PROTOCOL_PING || myMsg->protocol == PROTOCOL_PINGREPLY){
+            if(myMsg->protocol == PROTOCOL_FLOOD){
                return call Flooding.updateFlood(msg, payload, len);
             }
 
@@ -79,6 +79,11 @@ implementation{
 
             if(myMsg->protocol == PROTOCOL_IP){
                dbg(ROUTING_CHANNEL, "Caught IP packet\n");
+               return call Tinynet.forwardIP(msg, payload, len);
+            }
+
+            if(myMsg->protocol == PROTOCOL_IPR){
+               dbg(ROUTING_CHANNEL, "Caught IP Reply\n");
                return call Tinynet.forwardIP(msg, payload, len);
             }
 

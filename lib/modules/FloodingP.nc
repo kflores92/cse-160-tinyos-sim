@@ -24,11 +24,11 @@ implementation {
             cachePacket = call Cache.get(msg.origin);
             if(cachePacket.seq < msg.seq){
                 call Cache.remove(msg.origin);
-                makePack(&storePacket, msg.origin, msg.src, msg.dest, msg.TTL, msg.protocol, msg.seq, msg.payload, PACKET_MAX_PAYLOAD_SIZE);
+                makePack(&storePacket, msg.origin, msg.src, msg.dest, msg.TTL, PROTOCOL_FLOOD, msg.seq, msg.payload, PACKET_MAX_PAYLOAD_SIZE);
                 call Cache.insert(msg.origin, storePacket);
             }
         }else{
-            makePack(&storePacket, msg.origin, msg.src, msg.dest, msg.TTL, msg.protocol, msg.seq, msg.payload, PACKET_MAX_PAYLOAD_SIZE);
+            makePack(&storePacket, msg.origin, msg.src, msg.dest, msg.TTL, PROTOCOL_FLOOD, msg.seq, msg.payload, PACKET_MAX_PAYLOAD_SIZE);
             call Cache.insert(msg.origin, storePacket);
         }
 
@@ -59,13 +59,6 @@ implementation {
                     }
                 }else {
                     call Cache.insert(myMsg->origin, storePacket);
-                }
-
-                if(myMsg->protocol == 0){
-                    ptr_payload = "Message Recieved.";
-                    makePack(&sendPacket, TOS_NODE_ID, TOS_NODE_ID, myMsg->origin, MAX_TTL, 1, mySeq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
-                    mySeq += 1;
-                    call Flooding.send(sendPacket, myMsg->origin);
                 }
                 
                 dbg(FLOODING_CHANNEL, "Packet Reached Destination and Cached. \n");     
