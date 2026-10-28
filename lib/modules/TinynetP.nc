@@ -69,6 +69,7 @@ implementation {
             pack* myMsg = (pack*) payload;
 
             if(myMsg->dest == TOS_NODE_ID) {
+
                 //if dest ping
                 dbg(ROUTING_CHANNEL, "Packet has reached destination! \n");
                 dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
