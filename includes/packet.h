@@ -12,8 +12,8 @@
 enum{
 	PACKET_HEADER_LENGTH = 11,
 	PACKET_MAX_PAYLOAD_SIZE = 29 - PACKET_HEADER_LENGTH,
-	TCP_HEADER_LENGTH = 5 + PACKET_HEADER_LENGTH
-	SEGMENT_MAX_PAYLOAD_SIZE = 29 - TCP_HEADER_LENGTH
+	TCP_HEADER_LENGTH = 5 + PACKET_HEADER_LENGTH,
+	SEGMENT_MAX_PAYLOAD_SIZE = 29 - TCP_HEADER_LENGTH,
 	MAX_TTL = 16
 };
 
@@ -27,6 +27,9 @@ typedef nx_struct pack{
 	nx_uint8_t payload[PACKET_MAX_PAYLOAD_SIZE];
 }pack;
 
+//IP Header
+
+
 //Transport Header
 typedef nx_struct transport{
 	nx_uint8_t src_port;
@@ -35,7 +38,7 @@ typedef nx_struct transport{
 	nx_uint8_t ack;
 	nx_uint8_t flag;
 	nx_uint8_t payload[SEGMENT_MAX_PAYLOAD_SIZE];
-}transport
+}transport;
 
 /*
  * logPack

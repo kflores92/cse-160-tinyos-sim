@@ -17,8 +17,7 @@ implementation {
     uint16_t mySeq;
     uint8_t nextHop;
 
-
-        pack* outgoingPack;
+    pack* outgoingPack;
 
     command error_t Tinynet.send(pack* msg, uint16_t dest){
         dbg(ROUTING_CHANNEL, "FORWARD_IP STARTED on node %d\n", TOS_NODE_ID);
