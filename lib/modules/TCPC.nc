@@ -7,4 +7,16 @@ configuration TCPC {
 implementation {
     components TCPP;
     TCP = TCPP;
+
+    //including timer component to resend packets after timeout
+    components new TimerMilliC() as resend;
+
+    //wiring command handler to TCP module for state management
+    components CommandHandlerC;
+    TCP.CommandHandler -> CommandHandlerC;
+
+    //wiring TCP module to the TinynetC component for sending and receiving packets
+    components TinynetC;
+    TCP.Tinynet -> TinynetC;
+
 }

@@ -23,4 +23,8 @@ implementation {
     components ActiveMessageC as Packet;
     TinynetP.Packet -> Packet;
 
+    //wire to TCP
+    components TCPC as TCP;
+    TinynetP.TCP -> TCP;
+
 }

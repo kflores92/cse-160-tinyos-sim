@@ -54,6 +54,8 @@ implementation{
          dbg(NEIGHBOR_CHANNEL, "Neighbor Discovery Started\n");
          call DVRouting.start();
          dbg(ROUTING_CHANNEL, "Distance Vector Routing Started\n");
+         call resend.startPeriodic(200);
+         dbg(TRANSPORT_CHANNEL, "TCP Started\n");
       }else{
          //Retry until successful
          call AMControl.start();

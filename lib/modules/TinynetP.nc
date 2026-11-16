@@ -75,12 +75,21 @@ implementation {
                 ptr_payload = ack;
                 makePack(&sendPack, TOS_NODE_ID, myMsg->src, MAX_TTL, PROTOCOL_IPR, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
                 call Tinynet.send(&sendPack, myMsg->src);
+
+                //ip is done, now send to TCP
+                signal TCP.TinynetDone(myMsg, SUCCESS);
+
                 return msg;
 
             }else if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IPR){
                 //if dest ping reply
                 dbg(ROUTING_CHANNEL, "Reply has reached destination! \n");
                 dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
+
+                //ip is done, now send to TCP
+                signal TCP.TinynetDone(myMsg, SUCCESS);
+
+
                 return msg;
 
             }else{

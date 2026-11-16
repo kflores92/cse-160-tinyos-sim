@@ -66,6 +66,25 @@ typedef struct socket_store_t{
 
     uint16_t RTT;
     uint8_t effectiveWindow;
+
+    uint16_t oldestUnAckedSeqNum;
+    uint16_t nextSeqNum; //to send
+    uint16_t nextSeqNumToRcv; //expected seq num
+    uint16_t advWindow;
+
+    bool txInProg == TRUE;
+    uint8_t lastHeard; //time of last sent packet
+    uint8_t numOfRetransmissions; //retransmission counter
+
+    uint8_t targBytes;
+    uint8_t bytesRcvd;
+    uint8_t bytesAcked;
+    uint8_t bytesRead;
+    bool consumerStopped;
+
+
+
+
 }socket_store_t;
 
 #endif
