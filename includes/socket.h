@@ -22,6 +22,15 @@ enum socket_state{
     LAST_ACK
 };
 
+enum flags{
+    NONE,
+    CLOSE,
+    CONNECT,
+    LISTEN_F,
+    SYN,
+    FIN
+};
+
 
 typedef nx_uint8_t nx_socket_port_t;
 typedef uint8_t socket_port_t;

@@ -34,6 +34,7 @@ module Node{
 
    uses interface TCP;
    
+   uses interface Transport;
 }
 
 implementation{
@@ -112,17 +113,29 @@ implementation{
       call DVRouting.printRoutingTable();
    }
 
-   event void CommandHandler.printLinkState(){}
+   event void CommandHandler.printLinkState(){
 
-   event void CommandHandler.printDistanceVector(){}
+   }
 
-   event void CommandHandler.setTestServer(){}
+   event void CommandHandler.printDistanceVector(){
 
-   event void CommandHandler.setTestClient(){}
+   }
 
-   event void CommandHandler.setAppServer(){}
+   event void CommandHandler.setTestServer(){
+      
+   }
 
-   event void CommandHandler.setAppClient(){}
+   event void CommandHandler.setTestClient(){
+
+   }
+
+   event void CommandHandler.setAppServer(){
+
+   }
+
+   event void CommandHandler.setAppClient(){
+
+   }
 
    void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
       Package->origin = origin;

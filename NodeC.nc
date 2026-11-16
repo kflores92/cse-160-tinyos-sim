@@ -45,4 +45,7 @@ implementation {
 
     components TCPC;
     Node.TCP -> TCPC;
+
+    components TransportC;
+    Node.Transport -> TransportC;
 }
