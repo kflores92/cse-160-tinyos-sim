@@ -67,8 +67,16 @@ implementation {
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
             pack sendPack;
+            transport* recievePack;
 
-            if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IP) {
+            //Reusing origin as a demux for TCP.
+            if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IP && myMsg->origin == PROTOCOL_TCP){
+                recievePack = (transport*) payload;
+                
+                signal Tinynet.transportPacketRecieve(recievePack, myMsg->src);
+                return msg;
+
+            }else if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IP) {
                 //if dest ping
                 dbg(ROUTING_CHANNEL, "Packet has reached destination! \n");
                 dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
@@ -129,7 +137,7 @@ implementation {
          
       return msg;
     }
-
+    
     void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
       Package->src = src;
       Package->dest = dest;
