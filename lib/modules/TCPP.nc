@@ -4,5 +4,10 @@
 
 module TCPP {
     provides interface TCP;
-    
+}
+
+implementation {
+    command void TCP.start(){
+        
+    }
 }

@@ -42,4 +42,7 @@ implementation {
 
     components TinynetC;
     Node.Tinynet -> TinynetC;
+
+    components TCPC;
+    Node.TCP -> TCPC;
 }

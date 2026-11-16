@@ -31,6 +31,8 @@ module Node{
    uses interface DVRouting;
 
    uses interface Tinynet;
+
+   uses interface TCP;
    
 }
 
