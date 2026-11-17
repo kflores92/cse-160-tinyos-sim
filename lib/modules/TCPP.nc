@@ -2,7 +2,7 @@
 #include "../../includes/packet.h"
 #include "../../includes/protocol.h"
 #include "../../includes/socket.h"
-#include "../../includes/port.h"
+#include "../../includes/connection.h"
 
 module TCPP {
     provides interface TCP;
@@ -15,38 +15,45 @@ module TCPP {
 implementation {
 
     void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t origin, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
-    mySeq = 0;
+    void makeSegment(transport* Segment, uint8_t src_port, uint8_t dest_port, uint8_t seq, uint8_t ack, uint8_t flag, uint8_t* payload, uint8_t length);
+    uint8_t mySeq = 0;
 
     bool activePort(uint8_t port){
-        
+        return FALSE;
     }
 
-    event void Tinynet.transportPacketRecieve(transport* myMsg, uint16_t src){
-        dbg(TRANSPORT_CHANNEL, "Transport Packet Arrived");
+    event void Tinynet.transportPacketRecieve(pack* myMsg, uint16_t src){
+        transport* mySeg = (transport*) myMsg->payload;
+
+        dbg(TRANSPORT_CHANNEL, "TCP Packet Arrived\n");
+        dbg(TRANSPORT_CHANNEL, "Flag: %d\n", mySeg->flag);
     }
 
     command error_t TCP.stateChange(uint8_t flag, uint8_t port){
-
+        return FAIL;
     }
 
     command error_t TCP.sendSetup(uint8_t* payload, uint8_t dest, uint8_t src_port, uint8_t dest_port){
-        pack* sendPack;
-        transport* sendSegment;
+        pack sendPack;
+        transport sendSegment;
         uint8_t* ptr_payload;
         
         makeSegment(&sendSegment, src_port, dest_port, mySeq, 0, SYN, payload, SEGMENT_MAX_PAYLOAD_SIZE);
-        ptr_payload = (uint8_t*)sendSegment;
+        ptr_payload = (uint8_t*) &sendSegment;
 
         makePack(&sendPack, TOS_NODE_ID, dest, MAX_TTL, PROTOCOL_TCP, PROTOCOL_IP, 0, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
-
-        call Tinynet.send(sendPack, dest);
+        return call Tinynet.send(&sendPack, dest);
     }
 
     command error_t TCP.sendData(uint8_t* payload, uint8_t len, uint8_t dest, uint8_t port){
-
+        return FAIL;
     }
 
     command error_t TCP.processData(uint8_t* payload, uint8_t port){
+        return FAIL;
+    }
+
+    event void Timeout.fired(){
 
     }
 

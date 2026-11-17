@@ -14,6 +14,7 @@
 #include "includes/channels.h"
 #include "includes/protocol.h"
 #include "includes/socket.h"
+#include "includes/connection.h"
 
 module Node{
    uses interface Boot;
@@ -135,7 +136,7 @@ implementation{
 
    }
 
-   event void Tinynet.transportPacketRecieve(transport* myMsg, uint16_t src){
+   event void Tinynet.transportPacketRecieve(pack* myMsg, uint16_t src){
 
    }
 

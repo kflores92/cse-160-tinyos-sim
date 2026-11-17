@@ -12,7 +12,7 @@ module TinynetP {
 
 implementation {
 
-    void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
+    void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
 
     uint16_t mySeq;
     uint8_t nextHop;
@@ -32,6 +32,7 @@ implementation {
 
                 makePack(
                     outgoingPack,
+                    msg->origin,
                     msg->src,
                     msg->dest,
                     msg->TTL,
@@ -53,8 +54,9 @@ implementation {
 
             }
 
+        }else {
+            return FAIL;
         }
-
     }
 
     
@@ -67,13 +69,12 @@ implementation {
         if(len==sizeof(pack)){
             pack* myMsg = (pack*) payload;
             pack sendPack;
-            transport* recievePack;
 
             //Reusing origin as a demux for TCP.
             if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IP && myMsg->origin == PROTOCOL_TCP){
-                recievePack = (transport*) payload;
                 
-                signal Tinynet.transportPacketRecieve(recievePack, myMsg->src);
+                makePack(&sendPack, myMsg->origin, myMsg->dest, myMsg->src, myMsg->TTL, myMsg->protocol, myMsg->seq, myMsg->payload, PACKET_MAX_PAYLOAD_SIZE);
+                signal Tinynet.transportPacketRecieve(&sendPack, myMsg->src);
                 return msg;
 
             }else if(myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_IP) {
@@ -81,7 +82,7 @@ implementation {
                 dbg(ROUTING_CHANNEL, "Packet has reached destination! \n");
                 dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
                 ptr_payload = ack;
-                makePack(&sendPack, TOS_NODE_ID, myMsg->src, MAX_TTL, PROTOCOL_IPR, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
+                makePack(&sendPack, myMsg->origin, TOS_NODE_ID, myMsg->src, MAX_TTL, PROTOCOL_IPR, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
                 call Tinynet.send(&sendPack, myMsg->src);
                 return msg;
 
@@ -106,6 +107,7 @@ implementation {
                         outgoingPack = (pack*) call Packet.getPayload(&localOutgoingMsg, sizeof(pack));
                         makePack(
                             outgoingPack,
+                            myMsg->origin,
                             myMsg->src,
                             myMsg->dest,
                             myMsg->TTL,
@@ -138,7 +140,8 @@ implementation {
       return msg;
     }
     
-    void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
+    void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
+      Package->origin = origin;
       Package->src = src;
       Package->dest = dest;
       Package->TTL = TTL;

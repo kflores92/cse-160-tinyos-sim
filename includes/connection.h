@@ -1,5 +1,5 @@
-#ifndef PORT
-#define PORT
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 enum action{
     NONE,
@@ -17,6 +17,6 @@ typedef nx_struct conn_store {
 
     nx_uint8_t seq;
     nx_uint8_t lastAck;
-}
+}conn_store;
 
 #endif

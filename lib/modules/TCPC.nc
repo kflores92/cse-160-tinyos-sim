@@ -1,7 +1,7 @@
 #include <Timer.h>
 #include "../../includes/packet.h"
 #include "../../includes/socket.h"
-#include "../../includes/port.h"
+#include "../../includes/connection.h"
 
 configuration TCPC {
     provides interface TCP;
