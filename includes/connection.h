@@ -7,7 +7,10 @@ enum action{
     CONNECT,
     LISTEN,
     SYN,
-    FIN
+    SYNACK,
+    ACK,
+    FIN,
+    FINACK
 };
 
 typedef nx_struct conn_store {
