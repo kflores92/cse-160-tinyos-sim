@@ -101,7 +101,7 @@ implementation{
 
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
       dbg(TRANSPORT_CHANNEL, "Sending TCP packet\n");
-      call TCP.sendSetup(payload, destination, 2, DEFAULT_LISTEN_PORT);
+      call TCP.sendSetup(SEND, destination, 2, DEFAULT_LISTEN_PORT, payload);
    }
 
    event void CommandHandler.printNeighbors(){
