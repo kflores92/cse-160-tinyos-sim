@@ -6,11 +6,12 @@ enum{
     ROOT_SOCKET_ADDR = 255,
     ROOT_SOCKET_PORT = 255,
     SOCKET_BUFFER_SIZE = 128,
+    DEFAULT_LISTEN_PORT = 1
 };
 
 enum socket_state{
     CLOSED,
-    LISTEN,
+    LISTENING,
     ESTABLISHED,
     SYN_SENT,
     SYN_RCVD,
@@ -20,15 +21,6 @@ enum socket_state{
     TIME_WAIT,
     CLOSE_WAIT,
     LAST_ACK
-};
-
-enum flags{
-    NONE,
-    CLOSE,
-    CONNECT,
-    LISTEN_F,
-    SYN,
-    FIN
 };
 
 

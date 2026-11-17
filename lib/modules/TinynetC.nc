@@ -14,7 +14,6 @@ implementation {
     components DVRoutingC as DVRouting;
     TinynetP.DVRouting -> DVRouting;
 
-
     //wire to link layer
     components new SimpleSendC(AM_PACK) as Sender;
     TinynetP.Sender -> Sender;

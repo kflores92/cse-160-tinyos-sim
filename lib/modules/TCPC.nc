@@ -1,17 +1,23 @@
+#include <Timer.h>
 #include "../../includes/packet.h"
 #include "../../includes/socket.h"
+#include "../../includes/port.h"
 
 configuration TCPC {
     provides interface TCP;
 }
 
 implementation {
+
     components TCPP;
     TCP = TCPP;
 
-    components new HashmapC(socket_store_t, MAX_NUM_OF_SOCKETS) as Sockets;
-    TCPP.Sockets -> Sockets;
-
     components TinynetC as Tinynet;
     TCPP.Tinynet -> Tinynet;
+
+    components new HashmapC(conn_store, 255) as Ports;
+    TCPP.Ports -> Ports;
+
+    components new TimerMilliC() as Timeout;
+    TCPP.Timeout -> Timeout;
 }

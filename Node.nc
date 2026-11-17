@@ -13,6 +13,7 @@
 #include "includes/sendInfo.h"
 #include "includes/channels.h"
 #include "includes/protocol.h"
+#include "includes/socket.h"
 
 module Node{
    uses interface Boot;
@@ -98,11 +99,8 @@ implementation{
 
 
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
-      pack sendPackage;
-      dbg(ROUTING_CHANNEL, "Sending IP packet\n");
-      
-      makePack(&sendPackage, TOS_NODE_ID, TOS_NODE_ID, destination, MAX_TTL, PROTOCOL_IP, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
-      call Tinynet.send(&sendPackage, destination);
+      dbg(TRANSPORT_CHANNEL, "Sending TCP packet\n");
+      call TCP.sendSetup(payload, destination, 2, DEFAULT_LISTEN_PORT);
    }
 
    event void CommandHandler.printNeighbors(){
