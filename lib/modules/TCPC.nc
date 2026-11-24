@@ -20,4 +20,13 @@ implementation {
 
     components new TimerMilliC() as Timeout;
     TCPP.Timeout -> Timeout;
+
+    components new List(uint8_t, 260) as avaliablePorts;
+    TCPP.avaliablePorts -> avaliablePorts;
+
+    components new TimerMilliC() as portRelease;
+    TCPP.portRelease -> portRelease;
+
+    components new List(uint8_t, 64) as closingPorts;
+    TCPP.closingPorts -> closingPorts;
 }

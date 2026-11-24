@@ -10,6 +10,9 @@ module TCPP {
     uses interface Hashmap<conn_store> as Ports;
     uses interface Tinynet;
     uses interface Timer<TMilli> as Timeout;
+    uses interface List<uint8_t> as avaliablePorts;
+    uses interface Timer<TMilli> as portRelease;
+    uses interface List<uint8_t> as closingPorts;
 }
 
 implementation {
@@ -19,7 +22,6 @@ implementation {
     void makeSegment(transport* Segment, uint8_t src_port, uint8_t dest_port, uint8_t seq, uint8_t ack, uint8_t flag, uint8_t* payload, uint8_t length);
     void makeConn(conn* Connection, uint8_t state, uint16_t dest_addr, uint8_t dest_port, uint8_t seq, uint8_t lastAck);
     uint8_t mySeq = 1;
-    uint8_t avaliablePort = 1;
 
     bool activePort(uint8_t port){
         if(Ports.contains(port)){
@@ -30,131 +32,32 @@ implementation {
     }
 
     command void startTCP(){
+        uint8_t i;
+
+        for(i = 1; i < 255; i++){
+            avaliablePorts.pushback(i);
+        }
+
         post postStateChange(LISTEN, DEFAULT_LISTEN_PORT);
     }
 
     event void Tinynet.transportPacketRecieve(pack* myMsg, uint16_t src){
         transport* mySeg = (transport*) myMsg->payload;
         dbg(TRANSPORT_CHANNEL, "TCP Packet Arrived\n");
-        
-        switch(mySeg->flag){
-            case SEND:
-                //processData
-                break;
-
-            case CONNECT:
-                post postStateChange(CONNECT, mySeg->dest_port);
-                break;
-
-            case LISTEN:
-                post postStateChange(LISTEN, mySeg->dest_port);
-                break;
-
-            case SYN:
-                post postStateChange(SYN, mySeg->dest_port);
-                break;
-
-            case SYNACK:
-                post postStateChange(SYNACK, mySeg->dest_port);
-                break;
-
-            case CLOSE:
-                post postStateChange(CLOSE, mySeg->dest_port);
-                break;
-
-            case ACK:
-                post postStateChange(ACK, mySeg->dest_port);
-                break;
-
-            case FIN:
-                post postStateChange(FIN, mySeg->dest_port);
-            
-            case FINACK:
-                post postStateChange(FINACK, mySeg->dest_port);
-
-            default:
-                dbg(TRANSPORT_CHANNEL, "Couldn't Identify TCP Action");
-                break;
-        }
+        post postStateChange(mySeg->flag, myMsg);
     }
 
-    command error_t TCP.stateChange(uint8_t flag, uint8_t port, uint16_t dest_addr){
-        post postStateChange(flag, port, dest_addr);
+    command error_t TCP.stateChange(uint8_t flag, pack* myMsg){
+        post postStateChange(flag, myMsg);
         return SUCCESS;
     }
 
-    task void postStateChange(uint8_t flag, uint8_t port, uint16_t dest_addr){
-        uint8_t = portTimeout;
-        conn_store storedConn;
-
-        switch(mySeg->flag){
-            case SEND:
-                //processData
-                break;
-
-            case CONNECT:
-                if(!Ports.contains(port)) {
-                    makeConn(&storedConn, SYN_SENT, dest_addr, DEFAULT_LISTEN_PORT, mySeq, 0);
-                    Ports.insert(port, storedConn);
-                    call sendSetup(SYN, dest_addr, port, DEFAULT_LISTEN_PORT, "");
-                }
-
-                break;
-
-            case LISTEN:
-                if(!Ports.contains(port)){
-                    makeConn(&storedConn, LISTENING, NO_ADDRESS, NO_PORT, 0, 0);
-                    Ports.insert(port, storedConn);
-                }
-
-                break;
-
-            case SYN:
-                if(Port.contains(port)){
-                    storedConn = Ports.get(port);
-                    if(storedConn->state == LISTENING){
-
-                        portTimeout = 200;
-                        while(activePort(avaliablePort) == TRUE && portTimeout > 0){
-                            avaliablePort += 1;
-                            portTimeout -= 1;
-                        }
-                    }
-                }
-
-                break;
-
-            case SYNACK:
-                
-                break;
-
-            case CLOSE:
-                
-                break;
-
-            case ACK:
-                
-                break;
-
-            case FIN:
-
-                break;    
-            
-            case FINACK:
-
-                break;
-
-            default:
-                dbg(TRANSPORT_CHANNEL, "Couldn't Identify TCP Action");
-                break;
-    }
-
-    command error_t TCP.sendSetup(uint8_t flag, uint8_t dest, uint8_t src_port, uint8_t dest_port, uint8_t* payload){
+    command error_t TCP.sendSetup(uint8_t flag, uint8_t dest, uint8_t src_port, uint8_t dest_port, uint8_t ack, uint8_t* payload){
         pack sendPack;
         transport sendSegment;
         uint8_t* ptr_payload;
         
-        makeSegment(&sendSegment, src_port, dest_port, mySeq, 0, SYN, payload, SEGMENT_MAX_PAYLOAD_SIZE);
+        makeSegment(&sendSegment, src_port, dest_port, mySeq, ack, flag, payload, SEGMENT_MAX_PAYLOAD_SIZE);
         ptr_payload = (uint8_t*) &sendSegment;
 
         makePack(&sendPack, TOS_NODE_ID, dest, MAX_TTL, PROTOCOL_TCP, PROTOCOL_IP, 0, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
@@ -171,6 +74,153 @@ implementation {
 
     event void Timeout.fired(){
 
+    }
+
+     task void postStateChange(uint8_t flag, pack* myMsg){
+        transport* mySeg = (transport*) myMsg->payload;
+        conn_store storedConn;
+        uint8_t src_port;
+
+        switch(mySeg->flag){
+            case SEND:
+
+                break;
+
+            case CONNECT:
+                if(!Ports.contains(mySeg->dest_port)) {
+                    makeConn(&storedConn, SYN_SENT, dest_addr, DEFAULT_LISTEN_PORT, mySeq, 0);
+                    Ports.insert(port, storedConn);
+                    call sendSetup(SYN, dest_addr, port, DEFAULT_LISTEN_PORT, 0 "");
+                }
+                break;
+
+            case LISTEN:
+                if(!Ports.contains(mySeg->dest_port)){
+                    makeConn(&storedConn, LISTENING, NO_ADDRESS, NO_PORT, 0, 0);
+                    Ports.insert(port, storedConn);
+                }
+
+                break;
+
+            case SYN:
+                if(Port.contains(mySeg->dest_port)){
+                    storedConn = Ports.get(mySeg->dest_port);
+                    if(storedConn->state == LISTENING){
+                        src_port = avaliablePorts.popfront();
+                        makeConn(&storedConn, SYN_RCVD, myMsg->src, mySeg->src_port, mySeg->seq, mySeg->ack);
+                        Ports.insert(src_port, storedConn);
+                        call sendSetup(SYNACK, dest_addr, port, DEFAULT_LISTEN_PORT, 0, "");
+                    }
+                }
+
+                break;
+
+            case SYNACK:
+                if(Port.contains(mySeg->dest_port)){
+                    storedConn = Ports.get(mySeg->dest_port);
+                    if(storedConn->state == SYN_SENT){
+                        makeConn(&storedConn, ESTABLISHED, myMsg->src, mySeg->src_port, mySeg->seq, mySeg->ack);
+                        Ports.insert(mySeg->dest_port, storedConn);
+                        call sendSetup(ACK, myMsg->src, mySeg->dest_port, mySeg->src_port, 0, "");
+                    }
+                }
+
+                break;
+
+            case CLOSE:
+                if(Port.contains(mySeg->src_port)){
+                    storedConn = Ports.get(mySeg->src_port);
+                    
+                    if(storedConn->state == ESTABLISHED){
+                        makeConn(&storedConn, FIN_WAIT_A, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->src_port, storedConn);
+                        call sendSetup(FIN, storedConn->dest_addr, storedConn->dest_port, mySeg->src_port, 0, "");
+                    }
+
+                    if(storedConn->state == CLOSE_WAIT){
+                        makeConn(&storedConn, FIN_WAIT_A, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->src_port, storedConn);
+                        call sendSetup(FIN, storedConn->dest_addr, storedConn->dest_port, mySeg->src_port, 0, "");
+                    }
+                }
+
+                break;
+
+            case ACK:
+                if(Port.contains(mySeg->dest_port)){
+                    storedConn = Ports.get(mySeg->dest_port);
+                    if(storedConn->state == SYN_RCVD){
+                        makeConn(&storedConn, ESTABLISHED, myMsg->src, mySeg->src_port, mySeg->seq, mySeg->ack);
+                        Ports.insert(mySeg->dest_port, storedConn);
+                    }
+
+                    if(storedConn->state == FIN_WAIT_A){
+                        makeConn(&storedConn, FIN_WAIT_B, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->dest_port, storedConn);
+                    }
+                    
+                    if(storedConn->state == CLOSING){
+                        makeConn(&storedConn, TIME_WAIT, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->dest_port, storedConn);
+                        portRelease.startOneShot(10000);
+                        closingPorts.pushback(mySeg->dest_port);
+                    }
+
+                    if(storedConn->state == LAST_ACK){
+                        avaliablePorts.pushback(mySeg->dest_port);
+                        Ports.remove(mySeg->dest_port);
+                    }
+                }
+                break;
+
+            case FIN:
+                if(Port.contains(mySeg->dest_port)){
+                    storedConn = Ports.get(mySeg->dest_port);
+                    if(storedConn->state == ESTABLISHED){
+                        makeConn(&storedConn, CLOSE_WAIT, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->src_port, storedConn);
+                        call sendSetup(ACK, storedConn->dest_addr, storedConn->dest_port, mySeg->src_port, 0, "");
+                    }
+
+                    if(storedConn->state == FIN_WAIT_A){
+                        makeConn(&storedConn, CLOSING, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->src_port, storedConn);
+                        call sendSetup(ACK, storedConn->dest_addr, storedConn->dest_port, mySeg->src_port, 0, "");
+                    }
+
+                    if(storedConn->state == FIN_WAIT_B){
+                        makeConn(&storedConn, TIME_WAIT, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->src_port, storedConn);
+                        call sendSetup(ACK, storedConn->dest_addr, storedConn->dest_port, mySeg->src_port, 0, "");
+                        portRelease.startOneShot(10000);
+                        closingPorts.pushback(mySeg->dest_port);
+                    }
+                }
+                break;    
+            
+            case FINACK:
+                if(Port.contains(mySeg->dest_port)){
+                    storedConn = Ports.get(mySeg->dest_port);
+                    if(storedConn->state == FIN_WAIT_A){
+                        makeConn(&storedConn, TIME_WAIT, storedConn->dest_addr, storedConn->dest_port, storedConn->seq, storedConn->ack);
+                        Ports.insert(mySeg->src_port, storedConn);
+                        call sendSetup(ACK, storedConn->dest_addr, storedConn->dest_port, mySeg->src_port, 0, "");
+                        portRelease.startOneShot(10000);
+                        closingPorts.pushback(mySeg->dest_port);
+                    }
+                }
+                break;
+
+            default:
+                dbg(TRANSPORT_CHANNEL, "Couldn't Identify TCP Action");
+                break;
+    }
+
+    event void portRelease.fired(){
+        release_port = closingPorts.popfront();
+
+        avaliablePorts.pushback(release_port);
+        Ports.remove(release_port);
     }
 
     void makeConn(conn* Connection, uint8_t state, uint16_t dest_addr, uint8_t dest_port, uint8_t seq, uint8_t lastAck){

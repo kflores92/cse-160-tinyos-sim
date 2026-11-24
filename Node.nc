@@ -100,8 +100,11 @@ implementation{
 
 
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
+      pack myMsg;
+      makePack(&myMsg, PROTOCOL_TCP, TOS_NODE_ID, destination, MAX_TTL, PROTOCOL_IP, 0, payload, PACKET_MAX_PAYLOAD_SIZE);
+      
       dbg(TRANSPORT_CHANNEL, "Sending TCP packet\n");
-      call TCP.sendSetup(SEND, destination, 2, DEFAULT_LISTEN_PORT, payload);
+      call TCP.stateChange(CONNECT, &myMsg);
    }
 
    event void CommandHandler.printNeighbors(){
