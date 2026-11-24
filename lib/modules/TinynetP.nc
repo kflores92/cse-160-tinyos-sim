@@ -55,6 +55,8 @@ implementation {
 
         }
 
+        return FAIL;
+
     }
 
     
@@ -76,8 +78,7 @@ implementation {
                 makePack(&sendPack, TOS_NODE_ID, myMsg->src, MAX_TTL, PROTOCOL_IPR, myMsg->seq, ptr_payload, PACKET_MAX_PAYLOAD_SIZE);
                 call Tinynet.send(&sendPack, myMsg->src);
 
-                //ip is done, now send to TCP
-                signal TCP.TinynetDone(myMsg, SUCCESS);
+                
 
                 return msg;
 
@@ -86,12 +87,15 @@ implementation {
                 dbg(ROUTING_CHANNEL, "Reply has reached destination! \n");
                 dbg(ROUTING_CHANNEL, "%s\n", myMsg->payload);
 
-                //ip is done, now send to TCP
-                signal TCP.TinynetDone(myMsg, SUCCESS);
+                
 
 
                 return msg;
 
+            }else if (myMsg->dest == TOS_NODE_ID && myMsg->protocol == PROTOCOL_TCP) {
+                // Hand incoming transport segment up to TCPP
+                signal Tinynet.receiveTCP(myMsg);
+                return msg;
             }else{
                 if(myMsg->TTL <= 1){
                     dbg(ROUTING_CHANNEL, "Packet has expired or been dropped. \n");

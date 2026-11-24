@@ -72,7 +72,7 @@ typedef struct socket_store_t{
     uint16_t nextSeqNumToRcv; //expected seq num
     uint16_t advWindow;
 
-    bool txInProg == TRUE;
+    bool txInProg;
     uint8_t lastHeard; //time of last sent packet
     uint8_t numOfRetransmissions; //retransmission counter
 

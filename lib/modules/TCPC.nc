@@ -10,13 +10,12 @@ implementation {
 
     //including timer component to resend packets after timeout
     components new TimerMilliC() as resend;
+    TCPP.resend -> resend;
 
-    //wiring command handler to TCP module for state management
-    components CommandHandlerC;
-    TCP.CommandHandler -> CommandHandlerC;
+    
 
     //wiring TCP module to the TinynetC component for sending and receiving packets
     components TinynetC;
-    TCP.Tinynet -> TinynetC;
+    TCPP.Tinynet -> TinynetC;
 
 }

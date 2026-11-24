@@ -1,11 +1,14 @@
+#include "../../includes/channels.h"
+#include "../../includes/packet.h"
+#include "../../includes/protocol.h"
+#include "../../includes/socket.h"
+#include "../../includes/connection.h"
+
 interface TCP {
     command void start();
 
-    command void testSendData(socket_store_t *connection);
+    command error_t startServer(uint8_t listenPort);
 
-    event void TinynetDone(pack* msg, error_t result);
+    command error_t startClient(uint16_t destAddr, uint8_t srcPort, uint8_t destPort, uint16_t transferBytes);
 
-    command void handleDataSegment(transport* seg, socket_store_t *connection);
-
-    task void handleAckSegment(transport* seg, socket_store_t *connection);
 }

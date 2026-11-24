@@ -54,7 +54,7 @@ implementation{
          dbg(NEIGHBOR_CHANNEL, "Neighbor Discovery Started\n");
          call DVRouting.start();
          dbg(ROUTING_CHANNEL, "Distance Vector Routing Started\n");
-         call resend.startPeriodic(200);
+         call TCP.start();
          dbg(TRANSPORT_CHANNEL, "TCP Started\n");
       }else{
          //Retry until successful
@@ -92,6 +92,10 @@ implementation{
                return call Tinynet.forwardIP(msg, payload, len);
             }
 
+            if(myMsg->protocol == PROTOCOL_TCP){
+               return call Tinynet.forwardIP(msg, payload, len);
+            }
+
             return msg;
          }
          
@@ -124,10 +128,12 @@ implementation{
    }
 
    event void CommandHandler.setTestServer(){
+      call TCP.startServer(20);
       
    }
 
    event void CommandHandler.setTestClient(){
+      call TCP.startClient(1, 10, 20, 1050);
 
    }
 
@@ -137,6 +143,10 @@ implementation{
 
    event void CommandHandler.setAppClient(){
 
+   }
+
+   event void Tinynet.receiveTCP(pack* msg) {
+    
    }
 
    void makePack(pack *Package, uint16_t origin, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length){
